@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Installs, configures, and starts the web server
-SERVER_CONFIG="server {
+server_config=\
+"server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
 
@@ -43,17 +44,17 @@ if [[ "$(which nginx | grep -c nginx)" == '0' ]]; then
     apt-get update
     apt-get -y install nginx
 fi
-mkdir -p /var/www/html /var/www/error
-chmod -R 755 /var/www
-echo 'Hello World!' > /var/www/html/index.html
-echo -e "Ceci n\x27est pas une page" > /var/www/error/404.html
+sudo mkdir -p /var/www/html /var/www/error
+sudo chmod -R 755 /var/www
+sudo echo 'Hello World!' > /var/www/html/index.html
+sudo echo -e "Ceci n\x27est pas une page" > /var/www/error/404.html
 
-mkdir -p /data/web_static/releases/test /data/web_static/shared
-echo -e "$HOME_PAGE" > /data/web_static/releases/test/index.html
+sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
+sudo echo -e "$HOME_PAGE" > /data/web_static/releases/test/index.html
 [ -d /data/web_static/current ] && rm -rf /data/web_static/current
 ln -sf /data/web_static/releases/test/ /data/web_static/current
-chown -hR ubuntu:ubuntu /data
-bash -c "echo -e '$SERVER_CONFIG' > /etc/nginx/sites-available/default"
+sudo chown -hR ubuntu:ubuntu /data
+echo -e '$sever_config' > /etc/nginx/sites-available/default
 ln -sf '/etc/nginx/sites-available/default' '/etc/nginx/sites-enabled/default'
 if [ "$(pgrep -c nginx)" -le 0 ]; then
 	service nginx start

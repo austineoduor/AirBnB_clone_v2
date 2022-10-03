@@ -20,7 +20,7 @@ SERVER_CONFIG="server {
 	}
 
 	if (\$request_filename ~ redirect_me) {
-		rewrite ^ https://sketchfab.com/bluepeno/models permanent;
+		rewrite ^ https://www.holbertonschool.com/ permanent;
 	}
 
 	location = /404.html {

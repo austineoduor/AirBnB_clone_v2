@@ -7,6 +7,7 @@ from os.path import exists, isdir
 
 
 env.hosts = ['3.236.140.13', '3.238.133.193']
+env.user = 'ubuntu'
 """The list of host server IP addresses."""
 
 

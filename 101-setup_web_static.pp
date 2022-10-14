@@ -1,123 +1,78 @@
-#/usr/bin/puppet apply
-# AirBnB clone web server setup and configuration
-exec { 'apt-get-update':
-  command => '/usr/bin/apt-get update',
-  path    => '/usr/bin:/usr/sbin:/bin',
+# puppet to install nginx and configure it to serve some content
+exec {'update':
+path     => '/usr/bin',
+command  => 'sudo apt-get -y update',
+provider => 'shell',
 }
-
-exec { 'remove-current':
-  command => 'rm -rf /data/web_static/current',
-  path    => '/usr/bin:/usr/sbin:/bin',
+->
+package { 'apache2.2-common':
+ensure => absent,
 }
-
+->
 package { 'nginx':
-  ensure  => installed,
-  require => Exec['apt-get-update'],
+ensure  => installed,
+require => Package['apache2.2-common'],
 }
-
-file { '/var/www':
-  ensure  => directory,
-  mode    => '0755',
-  recurse => true,
-  require => Package['nginx'],
+->
+service { 'nginx':
+ensure  => running,
+require => Package['nginx'],
 }
-
-file { '/var/www/html/index.html':
-  content => 'Hello, World!',
-  require => File['/var/www'],
+->
+file { '/data/':
+ensure => 'directory',
 }
-
-file { '/var/www/error/404.html':
-  content => "Ceci n'est pas une page",
-  require => File['/var/www'],
+->
+file { '/data/web_static/':
+ensure => 'directory',
 }
-
-exec { 'make-static-files-folder':
-  command => 'mkdir -p /data/web_static/releases/test /data/web_static/shared',
-  path    => '/usr/bin:/usr/sbin:/bin',
-  require => Package['nginx'],
+->
+file { '/data/web_static/shared/':
+ensure => 'directory',
 }
-
-file { '/data/web_static/releases/test/index.html':
-  content =>
-"<!DOCTYPE html>
-<html lang='en-US'>
-	<head>
-		<title>Home - AirBnB Clone</title>
-	</head>
-	<body>
-		<h1>Welcome to AirBnB!</h1>
-	<body>
-</html>
-",
-  replace => true,
-  require => Exec['make-static-files-folder'],
+->
+file { '/data/web_static/releases/':
+ensure => 'directory',
 }
-
-exec { 'link-static-files':
-  command => 'ln -sf /data/web_static/releases/test/ /data/web_static/current',
-  path    => '/usr/bin:/usr/sbin:/bin',
-  require => [
-    Exec['remove-current'],
-    File['/data/web_static/releases/test/index.html'],
-  ],
+->
+file { '/data/web_static/releases/test/':
+ensure => 'directory',
 }
-
-exec { 'change-data-owner':
-  command => 'chown -hR ubuntu:ubuntu /data',
-  path    => '/usr/bin:/usr/sbin:/bin',
-  require => Exec['link-static-files'],
+->
+exec {'html file':
+path     => ['/usr/bin', '/bin'],
+command  => 'sudo touch /data/web_static/releases/test/index.html',
+provider => 'shell',
 }
-
-file { '/etc/nginx/sites-available/default':
-  ensure  => present,
-  mode    => '0644',
-  content =>
-"server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
-	server_name _;
-	index index.html index.htm;
-	error_page 404 /404.html;
-	add_header X-Served-By \$hostname;
-	location / {
-		root /var/www/html/;
-		try_files \$uri \$uri/ =404;
-	}
-	location /hbnb_static/ {
-		alias /data/web_static/current/;
-		try_files \$uri \$uri/ =404;
-	}
-	if (\$request_filename ~ redirect_me){
-		rewrite ^ https://www.holbertonschool.com/ permanent;
-	}
-	location = /404.html {
-		root /var/www/error/;
-		internal;
-	}
-}",
-  require => [
-    Package['nginx'],
-    File['/var/www/html/index.html'],
-    File['/var/www/error/404.html'],
-    Exec['change-data-owner']
-  ],
+->
+exec {'write html':
+path     => ['/usr/bin', '/bin'],
+command  => 'sudo echo  "Holberton School" > /data/web_static/releases/test/index.html',
+provider => 'shell',
 }
-
-exec { 'enable-site':
-  command => "ln -sf '/etc/nginx/sites-available/default' '/etc/nginx/sites-enabled/default'",
-  path    => '/usr/bin:/usr/sbin:/bin',
-  require => File['/etc/nginx/sites-available/default'],
+->
+exec {'symlink':
+path     => ['/usr/bin', '/bin'],
+command  => 'sudo ln -sf /data/web_static/releases/test/ /data/web_static/current',
+provider => 'shell',
 }
-
-exec { 'start-nginx':
-  command => 'sudo service nginx restart',
-  path    => '/usr/bin:/usr/sbin:/bin',
-  require => [
-    Exec['enable-site'],
-    Package['nginx'],
-    File['/data/web_static/releases/test/index.html'],
-  ],
+->
+exec {'chown':
+path     => ['/usr/bin', '/bin'],
+command  => 'sudo chown -R ubuntu:ubuntu /data/',
+provider => 'shell',
 }
-
-Exec['start-nginx']
+->
+exec {'config':
+path     => ['/usr/bin', '/bin'],
+# lint:ignore:140chars
+command  => 'myc="\n\tlocation \/hbnb_static\/ {\n\t\talias \/data\/web_static\/current\/\;\n\t}\n"; st="server {"; sudo sed -i "s/^$st/$st$myc/" /etc/nginx/sites-enabled/default',
+# lint:endignore
+provider => 'shell',
+}
+->
+exec {'start nginx':
+path     => ['/usr/bin', '/bin', '/usr/sbin/'],
+command  => 'sudo service nginx start',
+provider => 'shell',
+}

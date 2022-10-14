@@ -17,16 +17,16 @@ def display_hbnb():
 
 
 @app.route('/c/<input>', strict_slashes=False)
-def display_c_input(input):
+def display_c_input(text):
     """Method to display C + the input text"""
-    return 'C %s' % input.replace("_", " ")
+    return 'C %s' % text.replace("_", " ")
 
 
 @app.route('/python', strict_slashes=False)
-@app.route('/python/<p_input>', strict_slashes=False)
-def display_python_input(p_input='is cool'):
+@app.route('/python/<p_text>', strict_slashes=False)
+def display_python_text(p_input='is cool'):
     """Method to display Python + the input text"""
-    return 'Python %s' % p_input.replace("_", " ")
+    return 'Python %s' % p_text.replace("_", " ")
 
 
 @app.route('/number/<int:n>', strict_slashes=False)

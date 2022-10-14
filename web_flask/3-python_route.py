@@ -18,14 +18,14 @@ def display_hbnb():
 
 
 @app.route('/c/<text>')
-def display_c_input(input):
+def display_c_input(text):
     """Method to display C + the input text"""
-    return 'C %s' % input.replace("_", " ")
+    return 'C %s' % text.replace("_", " ")
 
 
 @app.route('/python')
 @app.route('/python/<p_text>')
-def display_python_input(p_input='is cool'):
+def display_python_input(p_text='is cool'):
     """Method to display Python + the input text"""
     return 'Python %s' % p_text.replace("_", " ")
 

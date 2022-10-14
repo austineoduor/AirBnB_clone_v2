@@ -18,9 +18,9 @@ def display_hbnb():
 
 
 @app.route('/c/<text>')
-def display_c_input(input):
+def display_c_input(text):
     """Method to display the welcome text"""
-    return 'C %s' % input.replace("_", " ")
+    return 'C %s' % text.replace("_", " ")
 
 
 if __name__ == "__main__":

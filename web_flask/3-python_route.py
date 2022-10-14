@@ -17,17 +17,17 @@ def display_hbnb():
     return 'HBNB'
 
 
-@app.route('/c/<text>')
+@app.route('/c/<string:text>')
 def display_c_input(text):
     """Method to display C + the input text"""
     return 'C %s' % text.replace("_", " ")
 
 
-@app.route('/python')
-@app.route('/python/<p_text>')
-def display_python_input(p_text='is cool'):
+@app.route('/python', defaults={"text":"is cool"})
+@app.route('/python/<string:text>')
+def display_python_input(text):
     """Method to display Python + the input text"""
-    return 'Python %s' % p_text.replace("_", " ")
+    return 'Python %s' % text.replace('_', ' ')
 
 
 if __name__ == "__main__":

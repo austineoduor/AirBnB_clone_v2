@@ -29,5 +29,6 @@ def display_python_input(p_text='is cool'):
     """Method to display Python + the input text"""
     return 'Python %s' % p_text.replace("_", " ")
 
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)

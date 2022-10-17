@@ -23,7 +23,7 @@ def display_c_input(text):
     return 'C %s' % text.replace("_", " ")
 
 
-@app.route('/python/', defaults={"text" : "is cool"})
+@app.route('/python/', defaults={"text": "is cool"})
 @app.route('/python/<string:text>')
 def display_python_input(text):
     """Method to display Python + the input text"""

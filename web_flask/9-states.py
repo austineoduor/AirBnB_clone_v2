@@ -15,14 +15,14 @@ def teardown_db(self):
 @app.route('/states', strict_slashes=False)
 def display_states():
     """Method to display the only the state list"""
-    states = storage.all(State).values()
-    return render_template('7-states_list.html', states=states)
+    states = storage.all('State')
+    return render_template('9-states.html', states=states)
 
 
 @app.route('/states/<id>', strict_slashes=False)
 def display_cities_by_states(id):
     """Method to display the cities by states list"""
-    states = storage.all(State).values()
+    states = storage.all('State').values()
     for state in states:
         if state.id == id:
             return render_template('9-states.html', state=state)
